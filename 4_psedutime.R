@@ -2,53 +2,7 @@
 load("注释Macrophages.RData")
 load('注释Macrophages.RData')
 #################细胞轨迹#############################
-library(parallel)
-mc.cores <- detectCores()
-options(mc.cores = 24)
-register(SnowParam(workers = 10, progressbar = TRUE))
-library(SCP)
-library(BiocParallel)
-library(stats)
-table(Macrophages$cell_type)
 
-#######################################SCP###########################
-rm(cells_rankings)
-library(future)
-options(future.globals.maxSize = 1000000 * 1024^2)
-library(parallel)
-mc.cores <- detectCores()
-options(mc.cores = 12)
-register(SnowParam(workers = 1, progressbar = TRUE))
-library(SCP)
-library(BiocParallel)
-library(stats)
-library(ggsci)
-color_cluster <- c("#2E2A2B","#CE4E9C","#8B57A2")
-
-Microglia_harmony <- RunPAGA(
-  srt = Macrophages, group_by = "cell_type",
-  linear_reduction = "pca", nonlinear_reduction = "umap"
-)
-
-
-pdf("4_PAGA.pdf",width = 8, height = 4)
-PAGAPlot(srt = Microglia_harmony, reduction = "UMAP", 
-         label = TRUE, label_insitu = TRUE, 
-         node_size = 10,  edge_color = "black",
-         edge_alpha = 0.9,  edge_threshold = 0.02,
-         edge_highlight = T,
-         edge_highlight_color = "red",
-         label_repel = TRUE,node_palcolor=color_cluster)
-dev.off()
-pdf("4_PAGA2.pdf",width = 8, height = 4)
-CellDimPlot(Microglia_harmony, 
-            group.by = "cell_type", 
-            reduction = "UMAP", 
-            paga = Microglia_harmony@misc$paga,
-            palcolor=color_cluster,
-            paga_edge_threshold = 0.01, paga_edge_color = "black", paga_edge_alpha = 1,
-            show_stat = T)
-dev.off()
 
 ############################monocle2####################
 devtools::load_all("monocle")
